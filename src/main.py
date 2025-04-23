@@ -8,15 +8,12 @@ def main(page: ft.Page):
     
     def change_todo(e):
         print(todo_input.value)
-    a = 'dgi'
-        
 
     def click_button(e):
         print(todo_input.value)
-        todo_list.append(todo_input.value),
-        todo_list_area.controls = [
-            ft.Text(value=todo) for todo in todo_list] 
-        ft.Text(a.value)
+        new_todo = {'todo': todo_input.value, 'category': category_input.value}
+        todo_list.append(ft.Text(value=f"{new_todo['todo']}: {new_todo['category']}"))
+        todo_list_area.controls = [t for t in todo_list]
         page.update()
 
 
@@ -24,9 +21,13 @@ def main(page: ft.Page):
         label = 'Введите что-нибудь',
         on_change=change_todo
     )
+    category_input= ft.TextField(
+        label = 'Введите категорию',
+        on_change=change_todo
+    )
 
     add_button = ft.ElevatedButton(
-        'сохранить',
+        'Добавить',
         on_click = click_button,
         color=ft.Colors.PINK,
         bgcolor=ft.Colors.AMBER
@@ -35,7 +36,7 @@ def main(page: ft.Page):
     
     todo_list_area = ft.Column()
 
-    page.add(title,todo_input,add_button,todo_list_area)
+    page.add(title,todo_input,category_input,add_button,todo_list_area)
 
     
 
