@@ -1,43 +1,49 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = 'Приложение для управления списком дел'
-    todo_list = []
+    page.title = "Трекер расходов"
+    expenses = []
 
-    title = ft.Text('Список дел на день', size=30, weight=ft.FontWeight.BOLD)
-    
-    def change_todo(e):
-        print(todo_input.value)
+    name_input = ft.TextField(label="Название расхода", width=300)
+    amount_input = ft.TextField(label="Сумма расхода", width=150)
+    total_text = ft.Text(value="0", size=20, weight="bold", color=ft.colors.BLUE)
+    expense_list = ft.Column(expand=True, scroll='always')
 
-    def click_button(e):
-        print(todo_input.value)
-        new_todo = {'todo': todo_input.value, 'category': category_input.value}
-        todo_list.append(ft.Text(value=f"{new_todo['todo']}: {new_todo['category']}"))
-        todo_list_area.controls = [t for t in todo_list]
+    def add_expense(e):
+        name = name_input.value
+        amount_str = amount_input.value
+        try:
+            amount = float(amount_str)
+            if amount <= 0:
+                raise ValueError()
+        except ValueError:
+            page.snack_bar = ft.SnackBar(ft.Text("Сумма должна быть положительным числом!"))
+            page.snack_bar.open = True
+            page.update()
+            return
+        
+        expense_item = ft.Row([
+            ft.Text(name, size=16, weight="bold", color=ft.colors.BLACK),
+            ft.Text(f"{amount}", size=16, color=ft.colors.BLUE),
+            ft.Icon(name=ft.icons.EDIT, color=ft.colors.BLUE),
+            ft.Icon(name=ft.icons.DELETE, color=ft.colors.RED)
+        ], spacing=10)
+
+        expense_list.controls.append(expense_item)
+
+        current_total = float(total_text.value)
+        total_text.value = str(current_total + amount)
+
+        name_input.value = ""
+        amount_input.value = ""
         page.update()
 
-
-    todo_input= ft.TextField(
-        label = 'Введите что-нибудь',
-        on_change=change_todo
-    )
-    category_input= ft.TextField(
-        label = 'Введите категорию',
-        on_change=change_todo
+    page.add(
+        ft.Text("Ваши расходы", size=30, weight="bold"),
+        ft.Row([name_input, amount_input, ft.ElevatedButton(text="Добавить", on_click=add_expense)]),
+        ft.Text("Общая сумма расходов:", size=16),
+        total_text,
+        expense_list
     )
 
-    add_button = ft.ElevatedButton(
-        'Добавить',
-        on_click = click_button,
-        color=ft.Colors.PINK,
-        bgcolor=ft.Colors.AMBER
-        
-        )
-    
-    todo_list_area = ft.Column()
-
-    page.add(title,todo_input,category_input,add_button,todo_list_area)
-
-    
-
-ft.app(main)
+ft.app(target=main)
